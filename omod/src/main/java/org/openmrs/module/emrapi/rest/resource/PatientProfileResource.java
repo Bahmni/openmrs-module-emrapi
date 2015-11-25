@@ -217,6 +217,15 @@ public class PatientProfileResource extends DelegatingCrudResource<PatientProfil
 
     @Override
     public Object retrieve(String uuid, RequestContext context) throws ResponseException {
+        List<Object> returnValue = new ArrayList<Object>();
+        if("all".equals(uuid)){
+            List<PatientProfile> patients = EmrModuleContext.getEmrPatientProfileService().getAllPatients();
+            for(PatientProfile delegate : patients){
+                returnValue.add(ConversionUtil.convertToRepresentation(delegate, Representation.FULL));
+            }
+            return returnValue;
+        }
+
         PatientProfile delegate = EmrModuleContext.getEmrPatientProfileService().get(uuid);
 
         if (delegate.getPatient() == null) {

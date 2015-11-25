@@ -8,6 +8,7 @@ import org.openmrs.api.PersonService;
 import org.openmrs.module.emrapi.person.image.EmrPersonImageService;
 import org.openmrs.module.emrapi.person.image.PersonImage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EmrPatientProfileServiceImpl implements EmrPatientProfileService {
@@ -44,6 +45,24 @@ public class EmrPatientProfileServiceImpl implements EmrPatientProfileService {
         delegate.setRelationships(relationships);
 
         return delegate;
+    }
+
+    @Override
+    public List<PatientProfile> getAllPatients() {
+        List<PatientProfile> delegates = new ArrayList<PatientProfile>();
+
+        List<Patient> patients = patientService.getAllPatients();
+        for(Patient patient : patients) {
+            PatientProfile delegate = new PatientProfile();
+            delegate.setPatient(patient);
+
+            Person person = personService.getPerson(patient.getPersonId());
+            List<Relationship> relationships = personService.getRelationshipsByPerson(person);
+            delegate.setRelationships(relationships);
+            
+            delegates.add(delegate);
+        }
+        return delegates;
     }
 
     private void saveRelationships(List<Relationship> relationships) {
